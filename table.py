@@ -10,10 +10,9 @@ __maintainer__ = "David Dennis"
  *     That said, non-profit experimentation is welcome.
 """
 
-import pandas as pd
-from pandas import Series
 import numpy as np
 from numpy import int64
+import pandas as pd
 from pandas import DataFrame, Series, RangeIndex
 from tabulate import tabulate
 
