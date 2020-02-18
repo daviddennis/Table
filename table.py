@@ -15,6 +15,7 @@ from numpy import int64
 import pandas as pd
 from pandas import DataFrame, Series, RangeIndex
 from tabulate import tabulate
+from util import apply_op
 
 
 class Table(DataFrame):
@@ -103,8 +104,7 @@ class Table(DataFrame):
         return new_tbl
 
     def cast_columns(self, idents, typ):
-        from .util import is_list_like
-        if not is_list_like(idents):
+        if not (isinstance(idents, list) or isinstance(idents, tuple)):
             raise NotImplementedError
         for ident in idents:
             self.cast_column(ident, typ)
@@ -170,16 +170,14 @@ class Table(DataFrame):
 
     ### FILTERING
     def filter_by_value(self, column_name, op, val):
-        from .util import apply_op
         return self[apply_op(self[column_name], op, val)]
 
     def filter_and_sum(self, column_name, op, value, column_name2):
         return self.filter_by_value(column_name, op, value)[column_name2].sum()
 
     def filter_rows_by_col_val(self, ident, value_s, exclude=False):
-        from .util import is_list_like
         ident = self.format_ident(ident)
-        values = value_s if is_list_like(value_s) else [value_s]
+        values = value_s if isinstance(value_s, list) else [value_s]
         if isinstance(ident, str):
             if exclude:
                 self.drop(self[self[ident].isin(values)].index,
@@ -260,8 +258,7 @@ class Table(DataFrame):
         """
         Note: Returns a new DF
         """
-        from .util import is_list_like
-        index_vals = [index_vals] if not is_list_like(index_vals) else index_vals
+        index_vals = [index_vals] if not isinstance(index_vals, list) else index_vals
         df = self[~self.index.isin(index_vals)]
         df.__class__ = Table
         return df        
@@ -270,10 +267,9 @@ class Table(DataFrame):
         """
         Note: Returns a new DF
         """
-        from .util import is_list_like
         exclude = kwargs.get('exclude')
         column_name, values = args
-        if not is_list_like(values):
+        if not isinstance(values, list):
             values = [values]
         if exclude:
             df = self[self[column_name].isin(values)]            
@@ -316,7 +312,6 @@ class Table(DataFrame):
         """
         Note: Only handles one condition, for now..
         """
-        from .util import is_list_like, apply_op
         if all([isinstance(a, str) for a in args]):
             x, op, y = args
             return len(self.filter_by_value(x, op, y))
@@ -382,9 +377,8 @@ class Table(DataFrame):
 
     @staticmethod
     def load(filepath, filetype=None, nrows=None, na_values=None):
-        from .file import TXT
         kwargs = {}
-        if filetype == TXT:
+        if filetype == 'PLAINTEXT':
             kwargs['delimiter'] = "\n"
         if nrows:
             kwargs['nrows'] = nrows
