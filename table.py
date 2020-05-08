@@ -6,7 +6,7 @@ __maintainer__ = "David Dennis"
  * Original Creation Date: Sept 18, 2016
  * Python Version: 3.6.1
  * Instructions: 
- *     Please do not use this software code without my express permission.
+ *     Please do not use this software code commercially without my express permission.
  *     That said, non-profit experimentation is welcome.
 """
 
